@@ -27,8 +27,8 @@ public class CertificateServiceImpl implements CertificateService {
     private StudentRepository studentRepository;
     private StudentService studentservice;
 
-    public boolean validatePoint(Long tkmid,String subcategory){
-        return certificateRepository.findBytkmIdAndSubCategory(tkmid, subcategory).isPresent();
+    public Long validatePoint(Long tkmid, String subcategory) {
+        return certificateRepository.countByTkmIdAndSubCategory(tkmid, subcategory);
     }
 
     @Override
@@ -40,13 +40,14 @@ public class CertificateServiceImpl implements CertificateService {
                 certificateDto.getDurationDate(),
                 certificateDto.getProofCertificate()
         );
-        if(existingCert.isPresent()){
+        if (existingCert.isPresent()) {
             return new ResponseEntity<>("This certificate already exists.", HttpStatus.BAD_REQUEST);
         }
 
         // Calculate points using PointsCalculator
         int points = pointCalculator.calculatePoints(certificateDto.getCategory(), certificateDto.getSubCategory(), certificateDto.getLevelRole());
-        //System.out.println(points);
+        System.out.println("Calculated points: " + points);
+
         // Map DTO to entity
         Certificate certificate = CertificateMapper.maptoCert(certificateDto);
 
@@ -56,15 +57,31 @@ public class CertificateServiceImpl implements CertificateService {
         // Save the new certificate with points
         Certificate newCert = certificateRepository.save(certificate);
 
-        //Update the student points
-        Student oldStudData = studentRepository.findByTkmId(certificate.getTkmId());
-        if(!validatePoint(oldStudData.getTkmId(), certificateDto.getSubCategory())){
-            oldStudData.setActpts(oldStudData.getActpts() + points);
-            StudentDto newStudentDto = StudentMapper.mapToStudentDto(oldStudData);
-            StudentDto updatedStudentDto = studentservice.updateStudent(newCert.getId(),newStudentDto);
+        // Update the student points
+        Student oldStudData = studentRepository.findByTkmId(certificateDto.getTkmId());
+        System.out.println("Old student data: " + oldStudData);
+
+        if (oldStudData.getActpts() == null) {
+            oldStudData.setActpts(points);
+        }
+        else{
+            System.out.println("Old Points: " + oldStudData.getActpts());
+            if(certificateDto.getSubCategory().equals("MOOC with Final Assessment Certificate")){
+                if (validatePoint(oldStudData.getTkmId(), "MOOC with Final Assessment Certificate")==0) {
+                    oldStudData.setActpts(oldStudData.getActpts() + points);
+                }
+            }
+            else {
+                oldStudData.setActpts(oldStudData.getActpts()+points);
+            }
         }
 
+        StudentDto newStudentDto = StudentMapper.mapToStudentDto(oldStudData);
+        System.out.println("Updating student with: " + newStudentDto);
+        StudentDto updatedStudentDto = studentservice.updateStudent(oldStudData.getId(), newStudentDto);
+
         // Return the saved certificate with points
+        System.out.println("Returning certificate with points: " + newCert);
         return new ResponseEntity<>(CertificateMapper.maptoCertDto(newCert), HttpStatus.CREATED);
     }
 }
