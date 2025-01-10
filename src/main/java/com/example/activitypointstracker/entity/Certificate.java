@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +28,7 @@ public class Certificate {
     private String category;
 
     @Column(name = "subcategory")
-    private String subcategory;
+    private String subCategory;
 
     @Column(name = "levelrole")
     private String levelRole;
@@ -37,6 +41,10 @@ public class Certificate {
 
     @Column(name = "certlink")
     private String proofCertificate; // Google Drive link
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Column(name = "points")
     private Integer pointsEarned;

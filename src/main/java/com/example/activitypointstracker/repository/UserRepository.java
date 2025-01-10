@@ -1,12 +1,10 @@
 package com.example.activitypointstracker.repository;
 
-import com.example.activitypointstracker.entity.Student;
+import com.example.activitypointstracker.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
-
 @Repository
-public interface StudentRepository extends JpaRepository<Student,Long> {
-    Student findByTkmId(Long id);
+public interface UserRepository extends JpaRepository<User,Long> {
+
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,7 @@ public class CertificateDto {
     private Long id;
     private Long tkmId;
     private String category;
-    private String subcategory;
+    private String subCategory;
     private String levelRole;
     private String eventName;
     private String durationDate;

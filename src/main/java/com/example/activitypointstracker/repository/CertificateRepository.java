@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CertificateRepository extends JpaRepository<Certificate,Long> {
     Optional<Certificate> findBytkmIdAndEventNameAndDurationDateAndProofCertificate(Long tkmId, String eventName, String durationDate, String proofCertificate);
+    Optional<Certificate> findBytkmIdAndSubCategory(Long tkmid, String subcat);
+
 }
