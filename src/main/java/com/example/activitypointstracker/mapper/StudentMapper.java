@@ -4,31 +4,40 @@ import com.example.activitypointstracker.dto.StudentDto;
 import com.example.activitypointstracker.entity.Student;
 
 public class StudentMapper {
-    public static StudentDto mapToStudentDto(Student student){
+
+    // Maps Student entity to StudentDto
+    public static StudentDto mapToStudentDto(Student student) {
         return new StudentDto(
-                student.getId(),
                 student.getTkmId(),
                 student.getYear(),
                 student.getFirstName(),
                 student.getLastName(),
                 student.getEmail(),
                 student.getRollNo(),
-                student.getActpts()
-
+                student.getActpts() // This will include the value for `actpts`, defaulting to 0 if null
         );
     }
 
-    public static Student mapToStudent(StudentDto studentdto){
-        return new Student(
-                studentdto.getId(),
-                studentdto.getTkmId(),
-                studentdto.getYear(),
-                studentdto.getFirstName(),
-                studentdto.getLastName(),
-                studentdto.getEmail(),
-                studentdto.getRollNo(),
-                studentdto.getActpts()
-
-        );
+    // Maps StudentDto to Student entity
+    public static Student mapToStudent(StudentDto studentDto) {
+        return Student.builder()
+                .tkmId(studentDto.getTkmId())
+                .year(studentDto.getYear())
+                .firstName(studentDto.getFirstName())
+                .lastName(studentDto.getLastName())
+                .email(studentDto.getEmail())
+                .rollNo(studentDto.getRollNo())
+                .actpts(null) // Default to 0 as `actpts` is not provided from the frontend
+                .build();
     }
+    public static void updateStudentFromDto(StudentDto studentDto, Student student) {
+        student.setTkmId(studentDto.getTkmId());
+        student.setYear(studentDto.getYear());
+        student.setFirstName(studentDto.getFirstName());
+        student.setLastName(studentDto.getLastName());
+        student.setEmail(studentDto.getEmail());
+        student.setRollNo(studentDto.getRollNo());
+        // Note: actpts should not be updated unless explicitly required.
+    }
+
 }

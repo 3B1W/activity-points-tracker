@@ -19,10 +19,19 @@ public class StudentServiceImpl implements StudentService {
     private StudentRepository studentRepository;
 
     @Override
-    public StudentDto createStudent(StudentDto studentdto) {
-        Student student = StudentMapper.mapToStudent(studentdto);
-        Student savedStud = studentRepository.save(student);
-        return StudentMapper.mapToStudentDto(savedStud);
+    public Student createStudent(StudentDto studentDto) {
+        Student student = Student.builder()
+                .tkmId(studentDto.getTkmId())
+                .year(studentDto.getYear())
+                .firstName(studentDto.getFirstName())
+                .lastName(studentDto.getLastName())
+                .email(studentDto.getEmail())
+                .rollNo(studentDto.getRollNo())
+                .actpts(studentDto.getActpts()) // This will be null if not provided in DTO
+                .build();
+
+        // Save to database
+        return studentRepository.save(student);
     }
 
     @Override
@@ -46,15 +55,11 @@ public class StudentServiceImpl implements StudentService {
                 () -> new ResourceNotFoundException("Student with Id not found:"+regId)
         );
 
-        student.setFirstName(updatedDet.getFirstName());
-        student.setLastName(updatedDet.getLastName());
-        student.setEmail(updatedDet.getEmail());
-        student.setYear(updatedDet.getYear());
-        student.setRollNo(updatedDet.getRollNo());
-        student.setActpts(updatedDet.getActpts());
+        StudentMapper.updateStudentFromDto(updatedDet, student);
 
-        Student updatedStud = studentRepository.save(student);
-        return StudentMapper.mapToStudentDto(updatedStud);
+        Student updatedStudent = studentRepository.save(student);
+
+        return StudentMapper.mapToStudentDto(updatedStudent);
     }
 
     @Override

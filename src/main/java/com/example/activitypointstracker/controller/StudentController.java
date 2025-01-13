@@ -20,10 +20,9 @@ public class StudentController {
 
     //Build Add Student REST API
     @PostMapping
-    public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
-        StudentDto savedStud = studentservice.createStudent(studentDto);
+    public ResponseEntity<Student> createStudent(@RequestBody StudentDto studentDto){
+        Student savedStud = studentservice.createStudent(studentDto);
         return new ResponseEntity<>(savedStud, HttpStatus.CREATED);
-        //return ResponseEntity.ok("Student saved");
     }
 
     //Build Get Student REST API

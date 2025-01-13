@@ -1,13 +1,11 @@
 package com.example.activitypointstracker.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -34,6 +32,6 @@ public class Student {
     @Column(name="st_roll")
     private String rollNo;
 
-    @Column(name="totalpoints")
+    @Column(name="totalpoints",nullable = true)
     private  Integer actpts;
 }
