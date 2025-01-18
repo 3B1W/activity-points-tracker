@@ -10,7 +10,7 @@ Future<http.Response> uploadCertificate(
   String certificateLink,
   String duration,
 ) async {
-  const url = 'http://192.168.226.150:8080/api/certificate/upload'; // Replace with your backend URL
+  const url = 'http://localhost:8080/api/certificate/upload'; // Replace with your backend URL
 
   // Creating the payload (request body)
   final Map<String, dynamic> requestBody = {

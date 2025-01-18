@@ -13,7 +13,7 @@ class CertificateListPage extends StatelessWidget {
   
   // Fetch Certificates from API
   Future<List<Certificate>> fetchCertificates(int tkmId) async {
-    final url = Uri.parse('http://192.168.226.150:8080/api/certificate/all/$tkmId');
+    final url = Uri.parse('http://localhost:8080/api/certificate/all/$tkmId');
     final response = await http.get(url);
     print('Response: ${response.body}');
 
