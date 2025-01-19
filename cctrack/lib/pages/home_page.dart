@@ -1,11 +1,13 @@
 import 'package:cctrack/pages/activity_list.dart';
 import 'package:cctrack/pages/upload_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
 
   @override
   Widget build(BuildContext context) {

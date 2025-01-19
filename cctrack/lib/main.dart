@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/activity_list.dart';
 import 'pages/certificate_list_page.dart';
 import 'pages/upload_page.dart'; // Assuming these files contain defined pages
-import 'package:flutter/material.dart';
-import 'themes/light_mode.dart';
+import 'themes/light_mode.dart'; // Assuming you have light_mode.dart
 
 void main() {
   runApp(const MyApp());
@@ -12,8 +14,12 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
-  get set => null;
+
+  // Fetch tkmId from SharedPreferences
+  Future<int?> getTkmId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('tkmId');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +32,31 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginPage(), // Login page route
         '/home': (context) => const HomePage(), // Home page route
         '/register': (context) => const SignUpPage(), // Sign-up page route
-        '/upload': (context) =>  UploadCertificatePage(), // Upload certificate page route
-        '/certificate_list': (context) =>const CertificateListPage(tkmId: 220995),// Proper initialization for certificate list
-        '/tracked_activities': (context) =>  ActivityListPage(), // Activity list page route
+        '/upload': (context) => const UploadCertificatePage(), // Upload certificate page route
+        '/tracked_activities': (context) => ActivityListPage(), // Activity list page route
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/certificate_list') {
+          return MaterialPageRoute(
+            builder: (context) {
+              // Fetch tkmId and pass it to the CertificateListPage
+              return FutureBuilder<int?>(
+                future: getTkmId(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError || !snapshot.hasData) {
+                    return const Center(child: Text("Error or No tkmId"));
+                  } else {
+                    int? tkmId = snapshot.data;
+                    return CertificateListPage(tkmId: tkmId ?? 0); // Pass the tkmId
+                  }
+                },
+              );
+            },
+          );
+        }
+        return null; // Return null if no matching route is found
       },
     );
   }
@@ -40,21 +68,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> certificates = [
-      {
-        "title": "Metaverse - NITC TATHVA'22",
-        "points": 15,
-        "date": "Sunday, 12 June",
-      },
-      {
-        "title": "Ethical Hacking Workshop Tryst'24 IIT Delhi",
-        "points": 15,
-        "date": "Sunday, 12 June",
-      },
-      {
-        "title": "Programming, Data Structures and Algorithms using Python",
-        "points": 50,
-        "date": "Sunday, 12 June",
-      },
     ];
 
     return Scaffold(
@@ -68,8 +81,11 @@ class HomePage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/certificate_list',
-                    arguments: certificates); // Passing certificates as arguments
+                Navigator.pushNamed(
+                  context,
+                  '/certificate_list',
+                  arguments: certificates, // Passing certificates as arguments
+                );
               },
               child: const Text('View Certificates'),
             ),
@@ -88,12 +104,6 @@ class HomePage extends StatelessWidget {
               child: const Text('Activity List'),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/saved_upload');
-              },
-              child: const Text('Saved Upload Page'),
-            ),
           ],
         ),
       ),

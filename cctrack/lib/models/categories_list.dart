@@ -1,0 +1,63 @@
+final Map<String, List<String>> subCategories = {
+    'Entrepreneurship & Innovation': [
+      'Products Developed',
+      'Start-up Company (Registered legally)',
+      'Patent-Filed',
+      'Patent-Published',
+      'Patent-Approved',
+      'Patent-Licensed',
+      'Prototype developed and tested',
+      'Awards for Products developed',
+      'Innovative Technologies (Developed and used by industries/users)',
+      'Got Venture Capital Funding (For innovative ideas/products)',
+      'Startup Employment',
+      'Societal Innovations',
+    ],
+    'Leadership & Management': [
+      'Core Coordinator',
+      'Sub Coordinator',
+      'Volunteer',
+    ],
+    'National Initiatives Participation': [
+      'NCC',
+      'NSS',
+    ],
+    'Sports & Games Participation': [
+      'Participation',
+      'First Prize',
+      'Second Prize',
+      'Third Prize',
+    ],
+    'Cultural Activities Participation': [
+      'Music',
+      'Performing Arts',
+      'Literary Arts',
+      'Participation',
+      'First Prize',
+      'Second Prize',
+      'Third Prize',
+    ],
+    'Professional Self Initiatives': [
+      'Conference/Seminar Attendance (IITs/NITs)',
+      'Paper Presentation/Publication (IITs/NITs)',
+      'Poster Presentation/Publication (IITs/NITs)',
+      'Industrial Training/Internship (5+ days)',
+      'Industrial/Exhibition Visits',
+      'Foreign Language Skill (TOEFL/IELTS/BEC)',
+      'MOOC with Final Assessment Certificate',
+      'Tech Fest',
+      'Competitions by Professional Bodies',
+    ],
+  };
+
+  final Map<String, List<String>> rolesLevels = {
+    'Participation': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'First Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Second Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Third Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Music': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Performing Arts': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Literary Arts': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Tech Fest': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+    'Competitions by Professional Bodies': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
+  };

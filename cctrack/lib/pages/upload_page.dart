@@ -1,6 +1,7 @@
-import 'package:cctrack/models/cert_upload_backend.dart';
+import 'package:cctrack/models/backend_url.dart';
+import 'package:cctrack/models/categories_list.dart';
 import 'package:cctrack/models/certificatedto_model.dart';
-import 'package:cctrack/themes/dark_mode.dart';
+import 'package:cctrack/service/api_backend_service.dart';
 import 'package:cctrack/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,74 +18,13 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
   String? _selectedSubCategory;
   String? _selectedLevelOrRole;
 
-  final Map<String, List<String>> subCategories = {
-    'Entrepreneurship & Innovation': [
-      'Products Developed',
-      'Start-up Company (Registered legally)',
-      'Patent-Filed',
-      'Patent-Published',
-      'Patent-Approved',
-      'Patent-Licensed',
-      'Prototype developed and tested',
-      'Awards for Products developed',
-      'Innovative Technologies (Developed and used by industries/users)',
-      'Got Venture Capital Funding (For innovative ideas/products)',
-      'Startup Employment',
-      'Societal Innovations',
-    ],
-    'Leadership & Management': [
-      'Core Coordinator',
-      'Sub Coordinator',
-      'Volunteer',
-    ],
-    'National Initiatives Participation': [
-      'NCC',
-      'NSS',
-    ],
-    'Sports & Games Participation': [
-      'Participation',
-      'First Prize',
-      'Second Prize',
-      'Third Prize',
-    ],
-    'Cultural Activities Participation': [
-      'Music',
-      'Performing Arts',
-      'Literary Arts',
-      'Participation',
-      'First Prize',
-      'Second Prize',
-      'Third Prize',
-    ],
-    'Professional Self Initiatives': [
-      'Conference/Seminar Attendance (IITs/NITs)',
-      'Paper Presentation/Publication (IITs/NITs)',
-      'Poster Presentation/Publication (IITs/NITs)',
-      'Industrial Training/Internship (5+ days)',
-      'Industrial/Exhibition Visits',
-      'Foreign Language Skill (TOEFL/IELTS/BEC)',
-      'MOOC with Final Assessment Certificate',
-      'Tech Fest',
-      'Competitions by Professional Bodies',
-    ],
-  };
-
-  final Map<String, List<String>> rolesLevels = {
-    'Participation': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'First Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Second Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Third Prize': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Music': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Performing Arts': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Literary Arts': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Tech Fest': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-    'Competitions by Professional Bodies': ['Level I', 'Level II', 'Level III', 'Level IV', 'Level V'],
-  };
-
   // Text controllers to capture the input from text fields
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController certificateLinkController = TextEditingController();
   final TextEditingController durationController = TextEditingController();
+
+  //api service
+  final apiService = ApiBackendService(baseUrl: BASE_URL); //192.168.221.150
 
   @override
   Widget build(BuildContext context) {
@@ -165,10 +105,14 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
                     ),
                   ),
                   onPressed: () async {
+
+                    final tkmid = await apiService.getTkmId();
+                    final autht = await apiService.getAuthToken();
                     // Handle submission action
                     print('Event Name: ${eventNameController.text}');
                     print('Cert-link: ${certificateLinkController.text}');
                     print('duration: ${durationController.text}');
+                    print(autht);
                     //print((certificateLinkController.text.runtimeType));
                     final certificateDTO = CertificateDTO(
                       eventName: eventNameController.text,
@@ -183,7 +127,7 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
                       print('Please fill all fields');
                       return;
                     }
-                    final response = await uploadCertificate(220995, eventNameController.text, _selectedCategory, _selectedSubCategory, _selectedLevelOrRole, certificateLinkController.text, durationController.text);
+                    final response = await apiService.uploadCertificate(tkmid!, eventNameController.text, _selectedCategory, _selectedSubCategory, _selectedLevelOrRole, certificateLinkController.text, durationController.text);
                     // Check if the response status is 201 Created
                   if (response.statusCode == 201 || response.statusCode == 200) {
                     print('Certificate submitted successfully');
@@ -238,280 +182,262 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    String? hintText,
-    required ThemeData theme,
-    required double screenWidth,
-    required TextEditingController controller
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),  // Increased padding inside text fields
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,  // Larger label font size
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.tertiary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: controller,
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,  // Ensure typed text matches hint text size
-              fontWeight: FontWeight.w400,
-              color: theme.colorScheme.tertiary, // Matches the hint text color
-            ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                fontSize: screenWidth * 0.035,  // Larger hint text font size
+      Widget _buildTextField({
+      required String label,
+      String? hintText,
+      required ThemeData theme,
+      required double screenWidth,
+      required TextEditingController controller,
+    }) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: theme.colorScheme.tertiary,
               ),
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),  // Larger padding inside box
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),  // Larger border radius
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
+                fontWeight: FontWeight.w400,
+                color: theme.colorScheme.tertiary,
+              ),
+              maxLines: null, // Allow text to expand vertically
+              minLines: 1, // Minimum one line
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(
+                  fontSize: screenWidth * 0.035,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
                 ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
+                filled: true,
+                fillColor: theme.colorScheme.surface,
+                contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                  width: 2.0,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: theme.colorScheme.primary, width: 2.0),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
+    }
 
-  Widget _buildDropdownField1({
-    required String label,
-    required String hintText,
-    required ThemeData theme,
-    required double screenWidth,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),  // Increased padding inside dropdowns
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,  // Larger label font size
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.tertiary,
-            ),
+
+    Widget _buildDropdownField1({
+  required String label,
+  required String hintText,
+  required ThemeData theme,
+  required double screenWidth,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.035,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.tertiary,
           ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: _selectedCategory,
-            items: subCategories.keys
-                .map((String value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.035,  // Larger dropdown text font size
-                          color: theme.colorScheme.tertiary,
-                        ),
+        ),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<String>(
+          value: _selectedCategory,
+          isExpanded: true, // Ensure dropdown fills available width
+          items: subCategories.keys
+              .map((String value) => DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      overflow: TextOverflow.ellipsis, // Prevent text overflow
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.035,
+                        color: theme.colorScheme.tertiary,
                       ),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedCategory = value;
-                _selectedSubCategory = null;
-                _selectedLevelOrRole = null;
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),  // Larger padding
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                  width: 1.5,
-                ),
-              ),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedCategory = value;
+              _selectedSubCategory = null;
+              _selectedLevelOrRole = null;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+            contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField2({
-    required String label,
-    required String hintText,
-    required ThemeData theme,
-    required double screenWidth,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),  // Increased padding inside dropdowns
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,  // Larger label font size
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.tertiary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: _selectedSubCategory,
-            items: subCategories[_selectedCategory!]!
-                .map((String value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.035,  // Larger dropdown text font size
-                          color: theme.colorScheme.tertiary,
-                        ),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedSubCategory = value;
-                _selectedLevelOrRole = null;
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),  // Larger padding
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary, 
-                  width: 1.5,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField3({
-    required String label,
-    required ThemeData theme,
-    required double screenWidth,
-  }) {
-    if (_selectedSubCategory == null ||
-        !rolesLevels.containsKey(_selectedSubCategory!)) return const SizedBox();
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),  // Increased padding inside dropdown
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,  // Larger label font size
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.tertiary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: _selectedLevelOrRole,
-            items: rolesLevels[_selectedSubCategory!]!
-                .map((String value) => DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.035,  // Larger dropdown text font size
-                          color: theme.colorScheme.tertiary,
-                        ),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedLevelOrRole = value;
-              });
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-              contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),  // Larger padding inside box
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
-                  width: 1.5,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
+  Widget _buildDropdownField2({
+  required String label,
+  required String hintText,
+  required ThemeData theme,
+  required double screenWidth,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.035,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.tertiary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<String>(
+          value: _selectedSubCategory,
+          isExpanded: true, // Ensure dropdown fills available width
+          items: subCategories[_selectedCategory!]!
+              .map((String value) => DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      overflow: TextOverflow.ellipsis, // Prevent text overflow
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.035,
+                        color: theme.colorScheme.tertiary,
+                      ),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedSubCategory = value;
+              _selectedLevelOrRole = null;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+            contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+      Widget _buildDropdownField3({
+  required String label,
+  required ThemeData theme,
+  required double screenWidth,
+}) {
+  if (_selectedSubCategory == null || !rolesLevels.containsKey(_selectedSubCategory!)) return const SizedBox();
+
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.035,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.tertiary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<String>(
+          value: _selectedLevelOrRole,
+          isExpanded: true, // Ensure dropdown fills available width
+          items: rolesLevels[_selectedSubCategory!]!
+              .map((String value) => DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      overflow: TextOverflow.ellipsis, // Prevent text overflow
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.035,
+                        color: theme.colorScheme.tertiary,
+                      ),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedLevelOrRole = value;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+            contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenWidth * 0.03),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+}

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:cctrack/models/backend_url.dart';
 import 'package:cctrack/pages/certificate_detail_page.dart';
+import 'package:cctrack/service/api_backend_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:cctrack/models/certificate_model.dart';
 import 'package:flutter/material.dart';
@@ -7,23 +9,9 @@ import 'package:flutter/material.dart';
 class CertificateListPage extends StatelessWidget {
   final int tkmId;
 
-  const CertificateListPage({required this.tkmId, super.key});
+  CertificateListPage({required this.tkmId, super.key});
 
-
-  
-  // Fetch Certificates from API
-  Future<List<Certificate>> fetchCertificates(int tkmId) async {
-    final url = Uri.parse('http://localhost:8080/api/certificate/all/$tkmId');
-    final response = await http.get(url);
-    print('Response: ${response.body}');
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Certificate.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to fetch certificates');
-    }
-  }
+  final apiBackendService = ApiBackendService(baseUrl: BASE_URL);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +31,7 @@ class CertificateListPage extends StatelessWidget {
         foregroundColor: theme.colorScheme.tertiary,
       ),
       body: FutureBuilder<List<Certificate>>(
-        future: fetchCertificates(tkmId),
+        future: apiBackendService.fetchCertificates(tkmId),//fetchCertificates(tkmId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

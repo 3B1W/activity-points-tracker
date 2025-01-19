@@ -1,4 +1,8 @@
+import 'package:cctrack/models/backend_url.dart';
+import 'package:cctrack/service/api_backend_service.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,24 +16,66 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  void _login() async {
+  // Show loading dialog while making the API call
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Center(child: CircularProgressIndicator());
+    },
+  );
+
+  // Call the API backend service to handle login
+  final response = await ApiBackendService(baseUrl: BASE_URL) //baseUrl: 'http://192.168.221.150:8080'
+      .login(_emailController.text, _passwordController.text);
+
+  Navigator.pop(context); // Close the loading dialog
+
+  // Handle API response
+  if (response['success']) {
+    // If successful, navigate to home page
+    Navigator.pushNamed(context, '/home');
+  } else {
+    // If error, show error message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Login failed: Invalid Credentials')),
+    );
+  }
+}
+
+
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
   }
 
-  void _login() {
-    if (_emailController.text == "user@example.com" &&
-        _passwordController.text == "password") {
-      Navigator.pushNamed(context, '/home');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid email or password"),
-        ),
-      );
-    }
-  }
+  // void _login() async {
+  //   String email = _emailController.text;
+  //   String password = _passwordController.text;
+
+  //   try {
+  //     final result = await login(email, password);
+
+  //     if (result['status'] == 'success') {
+  //       // Replace '/home' with your desired route after login
+  //       Navigator.pushNamed(context, '/home');
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text("Invalid email or password"),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Login failed: $e'),
+  //       ),
+  //     );
+  //   }
+  // }
 
   void _register() {
     Navigator.pushNamed(context, '/register');

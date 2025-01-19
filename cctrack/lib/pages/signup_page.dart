@@ -1,3 +1,5 @@
+import 'package:cctrack/models/backend_url.dart';
+import 'package:cctrack/service/api_backend_service.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -13,8 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _registerNoController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -30,14 +31,40 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _signUp() {
+  void _signUp() async {
+    // Check if passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Passwords do not match")),
       );
       return;
     }
-    Navigator.pushNamed(context, '/home');
+
+    // Show loading dialog while making the API call
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Call the API backend service to handle signup
+    final response = await ApiBackendService(baseUrl: BASE_URL)
+        .signup(_firstNameController.text,_lastNameController.text,_emailController.text,_passwordController.text,_registerNoController.text );
+
+    Navigator.pop(context); // Close the loading dialog
+
+    // Handle API response
+    if (response['success']) {
+      // If successful, navigate to home page
+      Navigator.pushNamed(context, '/');
+    } else {
+      // If error, show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signup failed')),
+      );
+    }
   }
 
   void _navigateToLogin() {
@@ -91,7 +118,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   _buildTextField(
                     controller: _registerNoController,
                     label: 'Register No.',
-                    hint: 'e.g. 220456',
+                    hint: 'e.g. 240456',
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: height * 0.02),
