@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:cctrack/models/backend_url.dart';
 import 'package:cctrack/pages/certificate_detail_page.dart';
 import 'package:cctrack/service/api_backend_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:cctrack/models/certificate_model.dart';
 import 'package:flutter/material.dart';
 

@@ -1,3 +1,4 @@
+import 'package:cctrack/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/', // Set the initial route to login page
       routes: {
         '/': (context) => const LoginPage(), // Login page route
-        '/home': (context) => const HomePage(), // Home page route
+        '/home': (context) => const DashboardPage(), // Home page route
         '/register': (context) => const SignUpPage(), // Sign-up page route
         '/upload': (context) => const UploadCertificatePage(), // Upload certificate page route
         '/tracked_activities': (context) => ActivityListPage(), // Activity list page route

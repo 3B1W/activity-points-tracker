@@ -45,7 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
 
@@ -62,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } else {
       // If error, show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Signup failed')),
+        const SnackBar(content: Text('Signup failed')),
       );
     }
   }

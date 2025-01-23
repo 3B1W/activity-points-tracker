@@ -108,6 +108,7 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
 
                     final tkmid = await apiService.getTkmId();
                     final autht = await apiService.getAuthToken();
+                    print(tkmid);
                     // Handle submission action
                     print('Event Name: ${eventNameController.text}');
                     print('Cert-link: ${certificateLinkController.text}');

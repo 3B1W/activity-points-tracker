@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cctrack/models/StudentDto.dart';
 import 'package:cctrack/models/certificate_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +74,11 @@ class ApiBackendService {
     return prefs.getInt('tkmId');
   }
 
+  void setTkmId(int val) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('tkmId', val);
+  }
+
   Future<String?> getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -131,4 +137,56 @@ class ApiBackendService {
       throw Exception('Failed to fetch certificates');
     }
   }
+
+  /// Fetch student details using tkmId
+  Future<Student> fetchStudentDetails(int tkmId) async {
+    final url = Uri.parse('$baseUrl/api/student/$tkmId'); // Your API endpoint for student details
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return Student.fromJson(data); // Convert the response body to a Student object
+    } else {
+      throw Exception('Failed to fetch student details');
+    }
+  }
+
+  /// Update student details
+    Future<Map<String, dynamic>> updateStudentDetails({
+      required int tkmId,
+      required String firstName,
+      required String lastName,
+      required int? regno,
+      required String email,
+      required String rollNo,
+      required String year,
+    }) async {
+      final url = Uri.parse('$baseUrl/api/student/update/$tkmId'); // Your API endpoint
+
+      try {
+        final response = await http.put(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'tkmId': regno,
+            'firstName': firstName,
+            'lastName': lastName,
+            'email': email,
+            'rollNo': rollNo,
+            'year': year,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          setTkmId(regno!);
+          return {'success': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'success': false, 'error': jsonDecode(response.body)['error']};
+        }
+      } catch (e) {
+        return {'success': false, 'error': e.toString()};
+      }
+    }
+
+
 }

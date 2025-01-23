@@ -1,8 +1,6 @@
 import 'package:cctrack/models/backend_url.dart';
 import 'package:cctrack/service/api_backend_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     },
   );
 
@@ -39,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   } else {
     // If error, show error message
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Login failed: Invalid Credentials')),
+      const SnackBar(content: Text('Login failed: Invalid Credentials')),
     );
   }
 }
