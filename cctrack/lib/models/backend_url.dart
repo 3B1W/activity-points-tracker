@@ -1,1 +1,1 @@
-const BASE_URL='http://192.168.119.150:8080';// 192.168.119.150
+const BASE_URL='https://spring-activity-1-0.onrender.com';// 192.168.119.150
