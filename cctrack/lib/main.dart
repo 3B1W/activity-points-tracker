@@ -1,4 +1,5 @@
 import 'package:cctrack/pages/home_page.dart';
+import 'package:cctrack/pages/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const SignUpPage(), // Sign-up page route
         '/upload': (context) => const UploadCertificatePage(), // Upload certificate page route
         '/tracked_activities': (context) => ActivityListPage(), // Activity list page route
+        '/settings': (context) => const SettingPage(), 
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/certificate_list') {

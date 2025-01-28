@@ -114,101 +114,108 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Profile Information',
-              style: TextStyle(
-                fontSize: screenHeight * 0.03,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 60,
-              backgroundImage: NetworkImage(
-                  'https://i.pinimg.com/736x/a8/4a/a3/a84aa310f33862e53c30f55bdf94b013.jpg'), // Placeholder image URL
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: firstNameController,
-              label: 'First Name',
-              hint: 'Enter your first name',
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: lastNameController,
-              label: 'Last Name',
-              hint: 'Enter your last name',
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: registerNoController,
-              label: 'Register No.',
-              hint: 'e.g. 220456',
-              keyboardType: TextInputType.number,
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: emailController,
-              label: 'Email Address',
-              hint: 'name@email.com',
-              keyboardType: TextInputType.emailAddress,
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: rollNoController,
-              label: 'Roll No.',
-              hint: 'Enter your roll number',
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.025),
-            _buildTextField(
-              controller: yearController,
-              label: 'Year',
-              hint: 'Enter your year',
-              enabled: isEditing,
-            ),
-            SizedBox(height: screenHeight * 0.035),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (isEditing) {
-                    // Save changes logic here
-                    updateDetails();
-                    print("Profile saved");
-                    
-                  }
-                  isEditing = !isEditing; // Toggle editing mode
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: theme.colorScheme.surface,
-                backgroundColor: theme.colorScheme.primary,
-                minimumSize: Size(screenWidth * 0.8, screenHeight * 0.08),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-              ),
-              child: Text(
-                isEditing ? 'Save Profile' : 'Edit Profile',
-                style: const TextStyle(
-                  fontSize: 14.0,
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigate to the '/home' route when the back button is pressed
+        Navigator.of(context).pushNamed('/home');
+        return false; // Prevent the default back action
+      },
+      child: Scaffold(
+        backgroundColor: theme.colorScheme.surface,
+        appBar: AppBar(),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Profile Information',
+                style: TextStyle(
+                  fontSize: screenHeight * 0.03,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const CircleAvatar(
+                radius: 60,
+                backgroundImage: NetworkImage(
+                    'https://i.pinimg.com/736x/a8/4a/a3/a84aa310f33862e53c30f55bdf94b013.jpg'), // Placeholder image URL
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: firstNameController,
+                label: 'First Name',
+                hint: 'Enter your first name',
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: lastNameController,
+                label: 'Last Name',
+                hint: 'Enter your last name',
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: registerNoController,
+                label: 'Register No.',
+                hint: 'e.g. 220456',
+                keyboardType: TextInputType.number,
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: emailController,
+                label: 'Email Address',
+                hint: 'name@email.com',
+                keyboardType: TextInputType.emailAddress,
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: rollNoController,
+                label: 'Roll No.',
+                hint: 'Enter your roll number',
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              _buildTextField(
+                controller: yearController,
+                label: 'Year',
+                hint: 'Enter your year',
+                enabled: isEditing,
+              ),
+              SizedBox(height: screenHeight * 0.035),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    if (isEditing) {
+                      // Save changes logic here
+                      updateDetails();
+                      print("Profile saved");
+                      
+                    }
+                    isEditing = !isEditing; // Toggle editing mode
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: theme.colorScheme.surface,
+                  backgroundColor: theme.colorScheme.primary,
+                  minimumSize: Size(screenWidth * 0.8, screenHeight * 0.08),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+                child: Text(
+                  isEditing ? 'Save Profile' : 'Edit Profile',
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

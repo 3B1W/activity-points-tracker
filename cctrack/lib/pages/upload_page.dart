@@ -32,151 +32,158 @@ class _UploadCertificatePageState extends State<UploadCertificatePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-        titleTextStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: screenWidth * 0.05,  // Larger font size
-        ),
-        backgroundColor: theme.colorScheme.surface,
-        foregroundColor: theme.colorScheme.tertiary,
-        actions: [
-          IconButton(
-            icon: Icon(
-              theme.colorScheme.brightness == Brightness.light
-                  ? Icons.dark_mode
-                  : Icons.light_mode,
-            ),
-            onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            },
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigate to the '/home' route when the back button is pressed
+        Navigator.of(context).pushNamed('/home');
+        return false; // Prevent the default back action
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(''),
+          titleTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.05,  // Larger font size
           ),
-        ],
-      ),
-      body: SingleChildScrollView(  // Made the page scrollable
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),  // Increased horizontal padding
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Upload Certificate',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.06,  // Larger title font size
-                  fontFamily: 'Poppins-Bold'
-                ),
+          backgroundColor: theme.colorScheme.surface,
+          foregroundColor: theme.colorScheme.tertiary,
+          actions: [
+            IconButton(
+              icon: Icon(
+                theme.colorScheme.brightness == Brightness.light
+                    ? Icons.dark_mode
+                    : Icons.light_mode,
               ),
-              Text(
-                "Enter the category details",
-                style: TextStyle(
-                  fontSize: screenWidth * 0.035,  // Larger description font size
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.inversePrimary,
-                  fontFamily: 'Poppins-Regular'
+              onPressed: () {
+                Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+              },
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(  // Made the page scrollable
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),  // Increased horizontal padding
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Upload Certificate',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.06,  // Larger title font size
+                    fontFamily: 'Poppins-Bold'
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-
-              _buildTextField(label: "Event name", hintText: "Name", theme: theme, screenWidth: screenWidth, controller: eventNameController),
-              const SizedBox(height: 12),
-              _buildDropdownField1(label: "Category", hintText:"categories", theme: theme, screenWidth: screenWidth),
-              const SizedBox(height: 12),
-              if (_selectedCategory != null)
-                _buildDropdownField2(label: "Sub-Category", hintText:"sub-categories", theme: theme, screenWidth: screenWidth),
-              const SizedBox(height: 12),
-              if (_selectedSubCategory != null)
-                _buildDropdownField3(label: "Level or Role", theme: theme, screenWidth: screenWidth),
-              const SizedBox(height: 12),
-              _buildTextField(label: "Certificate link", hintText: "Drive link", theme: theme, screenWidth: screenWidth,controller: certificateLinkController),
-              const SizedBox(height: 12),
-              _buildTextField(label: "Duration or Specific date", hintText:"eg.2 years" ,theme:theme, screenWidth: screenWidth,controller: durationController),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerLeft, 
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
-                    foregroundColor: theme.colorScheme.surface,
-                    minimumSize: Size(screenWidth * 0.3, screenHeight * 0.05), // Larger button size
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),  // Slightly larger border radius
+                Text(
+                  "Enter the category details",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.035,  // Larger description font size
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.inversePrimary,
+                    fontFamily: 'Poppins-Regular'
+                  ),
+                ),
+                const SizedBox(height: 12),
+      
+                _buildTextField(label: "Event name", hintText: "Name", theme: theme, screenWidth: screenWidth, controller: eventNameController),
+                const SizedBox(height: 12),
+                _buildDropdownField1(label: "Category", hintText:"categories", theme: theme, screenWidth: screenWidth),
+                const SizedBox(height: 12),
+                if (_selectedCategory != null)
+                  _buildDropdownField2(label: "Sub-Category", hintText:"sub-categories", theme: theme, screenWidth: screenWidth),
+                const SizedBox(height: 12),
+                if (_selectedSubCategory != null)
+                  _buildDropdownField3(label: "Level or Role", theme: theme, screenWidth: screenWidth),
+                const SizedBox(height: 12),
+                _buildTextField(label: "Certificate link", hintText: "Drive link", theme: theme, screenWidth: screenWidth,controller: certificateLinkController),
+                const SizedBox(height: 12),
+                _buildTextField(label: "Duration or Specific date", hintText:"eg.2 years" ,theme:theme, screenWidth: screenWidth,controller: durationController),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerLeft, 
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.secondary,
+                      foregroundColor: theme.colorScheme.surface,
+                      minimumSize: Size(screenWidth * 0.3, screenHeight * 0.05), // Larger button size
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),  // Slightly larger border radius
+                      ),
+                    ),
+                    onPressed: () async {
+      
+                      final tkmid = await apiService.getTkmId();
+                      final autht = await apiService.getAuthToken();
+                      print(tkmid);
+                      // Handle submission action
+                      print('Event Name: ${eventNameController.text}');
+                      print('Cert-link: ${certificateLinkController.text}');
+                      print('duration: ${durationController.text}');
+                      print(autht);
+                      //print((certificateLinkController.text.runtimeType));
+                      final certificateDTO = CertificateDTO(
+                        eventName: eventNameController.text,
+                        category: _selectedCategory,
+                        subCategory: _selectedSubCategory,
+                        levelRole: _selectedLevelOrRole,
+                        certificateLink: certificateLinkController.text,
+                        duration: durationController.text,
+                      );
+                      if (certificateDTO.eventName.isEmpty || certificateDTO.certificateLink.isEmpty || certificateDTO.duration.isEmpty) {
+                        // Show an error message if any required field is empty
+                        print('Please fill all fields');
+                        return;
+                      }
+                      final response = await apiService.uploadCertificate(tkmid!, eventNameController.text, _selectedCategory, _selectedSubCategory, _selectedLevelOrRole, certificateLinkController.text, durationController.text);
+                      // Check if the response status is 201 Created
+                    if (response.statusCode == 201 || response.statusCode == 200) {
+                      print('Certificate submitted successfully');
+                      
+                      // Show a success message
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text("Success"),
+                          content: const Text("Your certificate has been submitted."),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                // Navigate to the Certificate List page
+                                Navigator.pushReplacementNamed(context, '/certificate_list');
+                              },
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      // Handle other status codes or errors
+                      print('Failed to submit certificate. Status: ${response.statusCode}');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text("Error"),
+                          content: const Text("There was an issue submitting your certificate. Please try again."),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Close the dialog
+                              },
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    },
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(fontSize: screenWidth * 0.04),  // Larger button text
                     ),
                   ),
-                  onPressed: () async {
-
-                    final tkmid = await apiService.getTkmId();
-                    final autht = await apiService.getAuthToken();
-                    print(tkmid);
-                    // Handle submission action
-                    print('Event Name: ${eventNameController.text}');
-                    print('Cert-link: ${certificateLinkController.text}');
-                    print('duration: ${durationController.text}');
-                    print(autht);
-                    //print((certificateLinkController.text.runtimeType));
-                    final certificateDTO = CertificateDTO(
-                      eventName: eventNameController.text,
-                      category: _selectedCategory,
-                      subCategory: _selectedSubCategory,
-                      levelRole: _selectedLevelOrRole,
-                      certificateLink: certificateLinkController.text,
-                      duration: durationController.text,
-                    );
-                    if (certificateDTO.eventName.isEmpty || certificateDTO.certificateLink.isEmpty || certificateDTO.duration.isEmpty) {
-                      // Show an error message if any required field is empty
-                      print('Please fill all fields');
-                      return;
-                    }
-                    final response = await apiService.uploadCertificate(tkmid!, eventNameController.text, _selectedCategory, _selectedSubCategory, _selectedLevelOrRole, certificateLinkController.text, durationController.text);
-                    // Check if the response status is 201 Created
-                  if (response.statusCode == 201 || response.statusCode == 200) {
-                    print('Certificate submitted successfully');
-                    
-                    // Show a success message
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text("Success"),
-                        content: const Text("Your certificate has been submitted."),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to the Certificate List page
-                              Navigator.pushReplacementNamed(context, '/certificate_list');
-                            },
-                            child: const Text("OK"),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    // Handle other status codes or errors
-                    print('Failed to submit certificate. Status: ${response.statusCode}');
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text("Error"),
-                        content: const Text("There was an issue submitting your certificate. Please try again."),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: const Text("OK"),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  },
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(fontSize: screenWidth * 0.04),  // Larger button text
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

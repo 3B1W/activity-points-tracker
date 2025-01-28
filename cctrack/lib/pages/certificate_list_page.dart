@@ -16,37 +16,45 @@ class CertificateListPage extends StatelessWidget {
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Certificate List",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.035, // Increased font size for title
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigate to the '/home' route when the back button is pressed
+        Navigator.of(context).pushNamed('/home');
+        return false; // Prevent the default back action
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Certificate List",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.035, // Increased font size for title
+            ),
           ),
+          backgroundColor: theme.colorScheme.surface,
+          foregroundColor: theme.colorScheme.tertiary,
         ),
-        backgroundColor: theme.colorScheme.surface,
-        foregroundColor: theme.colorScheme.tertiary,
-      ),
-      body: FutureBuilder<List<Certificate>>(
-        future: apiBackendService.fetchCertificates(tkmId),//fetchCertificates(tkmId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No certificates found'));
-          }
-
-          final certificates = snapshot.data!;
-          return ListView.builder(
-            itemCount: certificates.length,
-            itemBuilder: (context, index) {
-              return CertificateCard(certificate: certificates[index]);
-            },
-          );
-        },
+        body: FutureBuilder<List<Certificate>>(
+          future: apiBackendService.fetchCertificates(tkmId),//fetchCertificates(tkmId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No certificates found'));
+            }
+      
+            final certificates = snapshot.data!;
+            return ListView.builder(
+              itemCount: certificates.length,
+              itemBuilder: (context, index) {
+                return CertificateCard(certificate: certificates[index]);
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -103,7 +111,7 @@ class CertificateCard extends StatelessWidget {
                   const Icon(Icons.calendar_today, size: 18), // Slightly larger icon
                   const SizedBox(width: 12), // Increased spacing
                   Text(
-                    certificate.durationDate,
+                    certificate.createdAt,
                     style: TextStyle(
                       fontSize: screenWidth * 0.035, // Increased font size
                       fontWeight: FontWeight.bold,

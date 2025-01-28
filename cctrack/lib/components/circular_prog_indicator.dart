@@ -25,11 +25,11 @@ class ScoreTracker extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${scoreValue.toStringAsFixed(0)}', // Display score percentage
-                style: TextStyle(
+                scoreValue.toStringAsFixed(0), // Display score percentage
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 118, 3, 41),
+                  color: Color.fromARGB(255, 118, 3, 41),
                 ),
               ),
               const SizedBox(height: 4),

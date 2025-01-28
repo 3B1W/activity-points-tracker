@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _navigateToLogin() {
-    Navigator.pushNamed(context, '/');
+    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override
